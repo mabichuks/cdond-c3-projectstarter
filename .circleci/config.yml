@@ -332,7 +332,7 @@ workflows:
       - deploy-frontend-infrastructure:
           requires: [test-frontend, scan-frontend]
       - configure-infrastructure:
-          requires: [test-backend, scan-backend]
+          requires: [deploy-backend-infrastructure]
 
       #     filters:
       #       branches:
