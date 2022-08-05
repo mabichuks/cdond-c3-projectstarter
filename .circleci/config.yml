@@ -4,7 +4,6 @@ commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
-      # Add parameter here   
       workflow_id:
         type: string
         default: "${CIRCLE_WORKFLOW_ID:0:7}"
@@ -20,21 +19,22 @@ commands:
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
-    #parameters:
-      # Add parameter here     
+    parameters:
+      workflow_id:
+        type: string
+        default: "${CIRCLE_WORKFLOW_ID:0:7}"    
     steps:
       - run:
           name: Revert migrations
           # Add when this will run
           command: |
-            # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS = 1
-            if(( $SUCCESS==1 )); 
+            SUCCESS=$(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/migration_<< parameters.workflow_id>>)
+            # Logic for reverting the database state
+            if (( $SUCCESS == 1 ));
             then
-            #  cd ~/project/backend
-            #  npm install
-            #  Add revert code here. You can find this in the Getting Started section.
-              exit 1
+              cd ~/project/backend
+              npm install
+              npm run migration:revert
             fi
             
 jobs:
@@ -212,10 +212,17 @@ jobs:
             cd backend
             npm run migrations > migrations_dump.txt
       - run:
+          name: Print KVDB bucket 
+          command: |
+            echo $KVDB_BUCKET
+      - run:
           name: Send migration results to memstash
           command: |
-            # Your code here
-            exit 1
+            if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
+            then
+              curl https://kvdb.io/${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+            fi
+      - revert-migrations
 #      # Here's where you will add some code to rollback on failure      
 
 #   deploy-frontend:
@@ -333,14 +340,8 @@ workflows:
           requires: [test-frontend, scan-frontend]
       - configure-infrastructure:
           requires: [deploy-backend-infrastructure]
-
-      #     filters:
-      #       branches:
-      #         only: [test-feature-branch]
-      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
-      # - run-migrations:
-      #     requires: [configure-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
       # - deploy-frontend:
       #     requires: [run-migrations]
       # - deploy-backend:
