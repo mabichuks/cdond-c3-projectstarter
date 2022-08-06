@@ -204,6 +204,8 @@ jobs:
       - image: cimg/node:13.8.0
     steps:
       - checkout
+      - restore_cache:
+          key: backend-build
       - run:
           name: Install AWS CLI
           command: |
@@ -214,7 +216,6 @@ jobs:
           name: Run migrations
           command: |
             cd backend
-            npm install
             npm run migrations > migrations_dump.txt
       - run: 
           name: print migrations text
