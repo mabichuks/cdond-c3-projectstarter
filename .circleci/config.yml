@@ -204,26 +204,25 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      - restore_cache:
-          key: backend-build
       - run:
-          name: Install AWS CLI
+          name: Install dependencies
           command: |
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip
-            sudo ./aws/install
-            aws --version
+            pip install awscli
+            apk add --update nodejs npm
+            apk add --update curl
       - run:
           name: Run migrations
           command: |
             cd backend
+            npm install
             npm run migrations > migrations_dump.txt
+            cat migrations_dump.txt
       - run:
           name: Print KVDB bucket 
           command: |
             echo $KVDB_BUCKET
       - run:
-          name: Send migration results to memstash
+          name: Send migration results to kvdb
           command: |
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
