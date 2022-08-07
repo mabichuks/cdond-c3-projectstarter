@@ -242,9 +242,10 @@ jobs:
           name: Install node and npm dependencies
           command:  apk add --update nodejs npm
       - run: 
-          name: Install AWS cli
+          name: Install AWS cli and curl
           command: |
             pip install awscli
+            apk add --update curl
             aws --version
       - attach_workspace:
           at: ~/
