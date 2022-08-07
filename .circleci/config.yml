@@ -233,21 +233,21 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: amazon/aws-cli
+      - image: python:3.10.5-alpine3.16
     steps:
       - checkout
       - restore_cache:
           key: frontend-build
       - run:
-          name: Install dependencies
+          name: Install node and npm dependencies
+          command:  apk add --update nodejs npm
+      - run: 
+          name: Install AWS cli
           command: |
-            cd frontend
-            npm install
+            pip install awscli
+            aws --version
       - attach_workspace:
           at: ~/
-      - run: 
-          name: View content of inventory.txt
-          command: cat .circleci/ansible/inventory.txt 
       - run:
           name: Get backend url
           command: |
