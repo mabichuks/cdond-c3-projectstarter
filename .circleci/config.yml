@@ -273,21 +273,42 @@ jobs:
       - revert-migrations
       # Here's where you will add some code to rollback on failure      
                     
-#   deploy-backend:
-#     docker:
-#       # Docker image here that supports Ansible
-#     steps:
-#       # Checkout code from git
-#       # Add ssh keys with fingerprint
-#       # attach workspace
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # your code here
-#       - run:
-#           name: Deploy backend
-#           command: |
-#             # your code here
+  deploy-backend:
+    docker:
+      - image: python:3.10.5-alpine3.16
+    steps:
+      - checkout
+      - restore_cache:
+          key: backend-build
+      - add_ssh_keys:
+          fingerprints: ["84:68:82:b0:be:4d:ba:c6:14:3d:2b:ec:3e:27:05:31"]
+      - attach_workspace:
+          at: ~/
+
+      - run: 
+          name: Install dependencies
+          command: |
+            apk add --update --no-cache tar gzip nodejs npm aws-cli curl ansible
+      - run:
+          name: Deploy backend
+          command: |
+            cd backend
+            npm i
+            npm run build
+            cd ..
+            tar -C backend -czvf artifact.tar.gz .
+            cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
+            cd .circleci/ansible
+            echo "Contents  of the inventory.txt file is -------"
+            cat inventory.txt
+            ansible-playbook -i inventory.txt deploy-backend.yml
+      - run:
+          name: show packaged file
+          command: |
+            cd .circleci/ansible/roles/deploy/files
+            ls
+      - destroy-environment
+      - revert-migrations
 #       # Here's where you will add some code to rollback on failure  
 
 #   smoke-test:
