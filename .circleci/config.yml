@@ -275,7 +275,7 @@ jobs:
                     
   deploy-backend:
     docker:
-      - image: python:3.10.5-alpine3.16
+      - image: python:3.10.5-alpine3.11
     steps:
       - checkout
       - restore_cache:
@@ -290,12 +290,6 @@ jobs:
           command: |
             apk add --update --no-cache tar gzip nodejs npm aws-cli curl ansible
       - run:
-          name: Build backend
-          command: |
-            cd backend
-            npm i
-            npm run build
-      - run:
           name: Working dir
           command: |
             pwd
@@ -304,8 +298,17 @@ jobs:
           name: Package backend
           command: |
             cd backend
+            pwd
+            ls
+            echo "backend ls1"
+            npm i
+            npm run build
+            cd ..
+            ls
+            echo "backend ls2"
             tar -C backend -czvf artifact.tar.gz .
-            cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
+            mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
+            mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
