@@ -335,7 +335,6 @@ jobs:
       - run:
           name: env file
           command: |
-            cd .circleci/ansible/roles/deploy/files
             cat .env
       - destroy-environment
       - revert-migrations
