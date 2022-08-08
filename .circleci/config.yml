@@ -298,10 +298,8 @@ jobs:
       - run:
           name: Working dir
           command: |
-            cd ..
             pwd
             ls
-
       - run:
           name: Package backend
           command: |
