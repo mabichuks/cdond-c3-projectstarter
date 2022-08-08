@@ -303,7 +303,6 @@ jobs:
           fingerprints: ["84:68:82:b0:be:4d:ba:c6:14:3d:2b:ec:3e:27:05:31"]
       - attach_workspace:
           at: ~/
-
       - run: 
           name: Install dependencies
           command: |
@@ -335,7 +334,7 @@ jobs:
       - run:
           name: env file
           command: |
-            cat .env
+            cat ~/project/backend/.env
       - destroy-environment
       - revert-migrations
 #       # Here's where you will add some code to rollback on failure  
