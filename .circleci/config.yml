@@ -397,7 +397,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update --no-cache nodejs npm aws-cli curl
+            apk add --update --no-cache nodejs npm aws-cli curl 
       - run:
           name: Update cloudfront distribution
           command: |
@@ -432,7 +432,7 @@ jobs:
 
   cleanup:
       docker:
-        - image: amazon/aws-cli
+        - image: amazon/aws-cli tar gzip
       steps:
         - checkout
         - attach_workspace:
