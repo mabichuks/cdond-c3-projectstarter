@@ -484,7 +484,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update aws-cli tar gzip ansible nodejs npm
+            apk add --update aws-cli tar gzip ansible nodejs npm curl
       - attach_workspace:
           at: ~/
       - run:
@@ -528,5 +528,5 @@ workflows:
       - cleanup:
           requires: [cloudfront-update]
       - add-prometheus-node-exporter:
-          requires: [cleanup]
+          requires: [deploy-backend-infrastructure]
             
