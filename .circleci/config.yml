@@ -397,7 +397,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update --no-cache nodejs npm aws-cli
+            apk add --update --no-cache nodejs npm aws-cli curl
       - run:
           name: Update cloudfront distribution
           command: |
