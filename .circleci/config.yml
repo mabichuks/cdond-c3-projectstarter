@@ -409,10 +409,10 @@ jobs:
             echo $OldWorkflowID >> ~/OldWorkflowID.txt
             cat ~/OldWorkflowID.txt
             
-            export STACKS=($(aws cloudformation list-stacks \
+            export STACKS=$(aws cloudformation list-stacks \
               --query "StackSummaries[*].StackName" \
               --stack-status-filter \
-              --no-paginate --output text))
+              --no-paginate --output text)
               
             echo stacks "${STACKS}" 
             aws cloudformation deploy \
