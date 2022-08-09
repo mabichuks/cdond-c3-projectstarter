@@ -432,11 +432,15 @@ jobs:
 
   cleanup:
       docker:
-        - image: amazon/aws-cli tar gzip
+        - image: python:3.10.5-alpine3.16
       steps:
         - checkout
         - attach_workspace:
             at: ~/
+        - run: 
+            name: Install dependencies
+            command: |
+              apk add --update --no-cache tar gzip nodejs npm aws-cli curl ansible
         - run:
             name: Get old stack workflow id
             command: |
